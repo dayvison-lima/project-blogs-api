@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 
 // não remova ou mova esse endpoint
+// commit inicial
 app.get('/', (_request, response) => {
   response.send();
 });
