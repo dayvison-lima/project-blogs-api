@@ -1,22 +1,34 @@
-const User = (sequelize, DataTypes) => {
-    const userTable = sequelize.define('User', {
+module.exports = (sequelize, DataTypes) => {
+    const User = sequelize.define('User', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
+            allowNull: false,
         },
-        displayName: DataTypes.STRING,
-        image: DataTypes.STRING,
-        email: DataTypes.STRING,
-        password: DataTypes.STRING
+        displayName: {
+            type: DataTypes.STRING,
+            allowNull: false, 
+        },
+        email: {
+            type: DataTypes.STRING,
+            unique: true,
+            allowNull: false, 
+        },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false, 
+        },
+        image: {
+            type: DataTypes.STRING,
+            allowNull: true, 
+        },
     },
     {
-        tableName: 'User',
+        tableName: 'users',
+        timestamps: false,
         underscored: true,
-        timestamp: false,
-    })
+    });
 
-    return userTable;
+    return User;
 };
-
-module.exports = User;
