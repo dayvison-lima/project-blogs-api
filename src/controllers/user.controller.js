@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { getUserEmail } = require('../services/user.service');
+const { getUserEmail, createUserService } = require('../services/user.service');
 
 const secret = process.env.JWT_SECRET || 'senha';
 const jwtConfig = { algorithm: 'HS256', expiresIn: '1h' };
@@ -24,4 +24,29 @@ const loginController = async (req, res) => {
     }
 };
 
-module.exports = { loginController };
+const createUser = async (req, res, next) => {
+    try {
+        const { displayName, email, password, image } = req.body;
+        const existingEmail = await getUserEmail(email);
+        if (existingEmail) {
+            return res.status(409).json({ message: 'User already registered' });
+        }
+        const newUser = await createUserService(displayName, email, password, image);
+        const token = jwt.sign(
+        { id: newUser.id,
+        displayName: newUser.displayName,
+        email: newUser.email },
+        secret,
+        jwtConfig,
+        );
+
+    return res.status(201).json({ token });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { 
+    loginController,
+    createUser,
+ };
