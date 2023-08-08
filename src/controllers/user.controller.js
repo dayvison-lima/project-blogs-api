@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
-const { getUserEmail, createUserService } = require('../services/user.service');
+const { getUserEmail, createUserService, getUsersService } = require('../services/user.service');
+const { genToken } = require('../middlewares/validationJWT');
 
 const secret = process.env.JWT_SECRET || 'senha';
-const jwtConfig = { algorithm: 'HS256', expiresIn: '1h' };
+const jwtConfig = { algorithm: 'HS256', expiresIn: '10h' };
 const validateBody = (email, password) => email && password;
 
 const loginController = async (req, res) => {
@@ -12,7 +13,7 @@ const loginController = async (req, res) => {
             return res.status(400).json({ message: 'Some required fields are missing' });
         }
         const user = await getUserEmail(email);
-        // console.log('CONSOLE LOG DO CONTROLER: ', user);
+        
         if (!user || user.password !== password) {
             return res.status(400).json({ message: 'Invalid fields' });
         }
@@ -32,13 +33,10 @@ const createUser = async (req, res, next) => {
             return res.status(409).json({ message: 'User already registered' });
         }
         const newUser = await createUserService(displayName, email, password, image);
-        const token = jwt.sign(
-        { id: newUser.id,
-        displayName: newUser.displayName,
-        email: newUser.email },
-        secret,
-        jwtConfig,
-        );
+
+        const { _password, ...payload } = newUser.dataValues;
+
+        const token = await genToken(payload);
 
     return res.status(201).json({ token });
     } catch (error) {
@@ -46,7 +44,13 @@ const createUser = async (req, res, next) => {
     }
 };
 
+const getUsers = async (_req, res) => {
+    const users = await getUsersService();
+    return res.status(200).json(users);
+};
+
 module.exports = { 
     loginController,
     createUser,
+    getUsers,
  };
