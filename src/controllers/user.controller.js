@@ -1,5 +1,10 @@
 const jwt = require('jsonwebtoken');
-const { getUserEmail, createUserService, getUsersService } = require('../services/user.service');
+const { 
+    getUserEmail,
+    createUserService,
+    getUsersService,
+    getUserByIdService,
+ } = require('../services/user.service');
 const { genToken } = require('../middlewares/validationJWT');
 
 const secret = process.env.JWT_SECRET || 'senha';
@@ -49,8 +54,24 @@ const getUsers = async (_req, res) => {
     return res.status(200).json(users);
 };
 
+const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await getUserByIdService(id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User does not exist' });
+        }
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 module.exports = { 
     loginController,
     createUser,
     getUsers,
+    getUserById,
  };
