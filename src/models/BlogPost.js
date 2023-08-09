@@ -20,8 +20,16 @@ module.exports = (sequelize, DataTypes) => {
             field: 'user_id',
             allowNull: false,
         },
-        published: DataTypes.DATE,
-        updated: DataTypes.DATE,
+        published: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
+        },
+        updated: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
+        },
     }, {
         tableName: 'blog_posts',
         underscored: true,
@@ -29,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     BlogPost.associate = (models) => {
-        BlogPost.belongsTo(models.User, { foreignKey: 'userId', as: 'users' })
+        BlogPost.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
     }
 
     return BlogPost;

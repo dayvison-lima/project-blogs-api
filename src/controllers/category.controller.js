@@ -6,7 +6,6 @@ const createCategory = async (req, res) => {
         return res.status(400).json({ message: '"name" is required' });
     }
     try {
-        console.log('CONSOLE LOG CONTROLLER: ', name);
         const category = await createCategoryService(name);
         return res.status(201).json(category);
     } catch (error) {
