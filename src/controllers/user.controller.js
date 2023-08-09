@@ -8,7 +8,7 @@ const {
 const { genToken } = require('../middlewares/validationJWT');
 
 const secret = process.env.JWT_SECRET || 'senha';
-const jwtConfig = { algorithm: 'HS256', expiresIn: '10h' };
+const jwtConfig = { algorithm: 'HS256', expiresIn: '10d' };
 const validateBody = (email, password) => email && password;
 
 const loginController = async (req, res) => {
@@ -41,7 +41,11 @@ const createUser = async (req, res, next) => {
 
         const { _password, ...payload } = newUser.dataValues;
 
+        console.log('CONSOLE LOG PAYLOAD CREATE USER: ', payload);
+
         const token = await genToken(payload);
+
+        console.log('CONSOLE LOG DO TOKEN: ', token);
 
     return res.status(201).json({ token });
     } catch (error) {
